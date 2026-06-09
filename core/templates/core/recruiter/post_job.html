@@ -1,0 +1,76 @@
+{% extends 'core/base_dashboard.html' %}
+{% block title %}Post a Job — CareerSync{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-3 mb-4">
+  <a href="{% url 'recruiter_dashboard' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;"><i class="bi bi-arrow-left"></i></a>
+  <div>
+    <h4 class="fw-800 mb-0">Post a New Job</h4>
+    <p class="text-muted small mb-0">Reach thousands of qualified Filipino professionals</p>
+  </div>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="cs-card">
+      <div class="cs-card-header">
+        <h6 class="fw-700 mb-0"><i class="bi bi-briefcase-fill text-primary me-2"></i>Job Details</h6>
+      </div>
+      <div class="cs-card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Job Title <span class="text-danger">*</span></label>
+              {{ form.title }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Company Name <span class="text-danger">*</span></label>
+              {{ form.company }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Location <span class="text-danger">*</span></label>
+              {{ form.location }}
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Category</label>
+              {{ form.category }}
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Job Type</label>
+              {{ form.job_type }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Min Salary (₱/month)</label>
+              {{ form.salary_min }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Max Salary (₱/month)</label>
+              {{ form.salary_max }}
+            </div>
+            <div class="col-12">
+              <label class="form-label">Required Skills <span class="text-danger">*</span></label>
+              {{ form.required_skills }}
+              <div class="form-text">Separate skills with commas. e.g. Python, Django, SQL, Communication</div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Job Description <span class="text-danger">*</span></label>
+              {{ form.description }}
+            </div>
+            <div class="col-12">
+              <label class="form-label">Requirements</label>
+              {{ form.requirements }}
+            </div>
+            <div class="col-12 d-flex gap-2 justify-content-end">
+              <a href="{% url 'recruiter_dashboard' %}" class="btn btn-outline-secondary" style="border-radius:8px;">Cancel</a>
+              <button type="submit" class="btn-cs-primary btn px-5 fw-700">
+                <i class="bi bi-send me-2"></i>Post Job
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

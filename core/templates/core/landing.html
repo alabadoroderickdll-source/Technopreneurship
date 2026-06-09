@@ -1,0 +1,388 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}CareerSync — Build Smarter Resumes. Get Better Jobs.{% endblock %}
+
+{% block body %}
+
+<!-- ── HERO ── -->
+<section class="cs-hero">
+  <div class="cs-hero-grid"></div>
+  <div class="container cs-hero-content">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <div class="cs-hero-badge">
+          <i class="bi bi-stars"></i> AI-Powered Career Platform
+        </div>
+        <h1 class="cs-hero-title">
+          Build Smarter Resumes.<br>
+          <span>Get Better Jobs.</span>
+        </h1>
+        <p class="cs-hero-subtitle">
+          AI-powered resume building, interview preparation, and smart job matching
+          all in one platform — designed for Filipino talent.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="{% url 'register' %}" class="btn-cs-primary btn btn-lg px-4">
+            <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
+          </a>
+          <a href="{% url 'job_list' %}" class="btn-cs-outline btn btn-lg px-4" style="color:white;border-color:rgba(255,255,255,0.3);">
+            <i class="bi bi-briefcase me-2"></i>Browse Jobs
+          </a>
+        </div>
+        <div class="cs-hero-stats">
+          <div>
+            <div class="cs-hero-stat-num" data-counter="10000">0</div>
+            <div class="cs-hero-stat-label">Job Seekers</div>
+          </div>
+          <div>
+            <div class="cs-hero-stat-num" data-counter="{{ jobs_count|default:10 }}">0</div>
+            <div class="cs-hero-stat-label">Active Jobs</div>
+          </div>
+          <div>
+            <div class="cs-hero-stat-num" data-counter="500">0</div>
+            <div class="cs-hero-stat-label">Companies</div>
+          </div>
+          <div>
+            <div class="cs-hero-stat-num" data-counter="95">0</div>
+            <div class="cs-hero-stat-label">% Success Rate</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 d-none d-lg-block">
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:1.5rem;">
+          <!-- Simulated UI Card -->
+          <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:1.25rem;margin-bottom:1rem;">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div style="width:48px;height:48px;background:linear-gradient(135deg,#2563eb,#7c3aed);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;">JD</div>
+              <div>
+                <div style="color:white;font-weight:700;">Juan Dela Cruz</div>
+                <div style="color:#94a3b8;font-size:0.85rem;">Software Developer</div>
+              </div>
+              <div class="ms-auto">
+                <span style="background:rgba(34,197,94,0.2);color:#22c55e;padding:0.25rem 0.75rem;border-radius:100px;font-size:0.8rem;font-weight:700;">92% Match</span>
+              </div>
+            </div>
+            <div style="height:6px;background:rgba(255,255,255,0.1);border-radius:100px;overflow:hidden;">
+              <div style="width:92%;height:100%;background:linear-gradient(90deg,#22c55e,#16a34a);border-radius:100px;"></div>
+            </div>
+          </div>
+          <div class="row g-2">
+            <div class="col-4">
+              <div style="background:rgba(37,99,235,0.2);border-radius:10px;padding:1rem;text-align:center;">
+                <div style="color:white;font-weight:800;font-size:1.25rem;">85</div>
+                <div style="color:#94a3b8;font-size:0.75rem;">Resume Score</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div style="background:rgba(34,197,94,0.15);border-radius:10px;padding:1rem;text-align:center;">
+                <div style="color:white;font-weight:800;font-size:1.25rem;">12</div>
+                <div style="color:#94a3b8;font-size:0.75rem;">Job Matches</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div style="background:rgba(124,58,237,0.2);border-radius:10px;padding:1rem;text-align:center;">
+                <div style="color:white;font-weight:800;font-size:1.25rem;">5</div>
+                <div style="color:#94a3b8;font-size:0.75rem;">Interviews</div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div style="color:#94a3b8;font-size:0.8rem;margin-bottom:0.5rem;">Top Matched Jobs</div>
+            <!-- Replaced |split filter with static hardcoded items -->
+            <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:0.625rem 0.875rem;margin-bottom:0.5rem;display:flex;justify-content:space-between;align-items:center;">
+              <span style="color:white;font-size:0.85rem;font-weight:500;">BPO Agent</span>
+              <span style="color:#22c55e;font-size:0.75rem;font-weight:700;">●  Hiring</span>
+            </div>
+            <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:0.625rem 0.875rem;margin-bottom:0.5rem;display:flex;justify-content:space-between;align-items:center;">
+              <span style="color:white;font-size:0.85rem;font-weight:500;">IT Support</span>
+              <span style="color:#22c55e;font-size:0.75rem;font-weight:700;">●  Hiring</span>
+            </div>
+            <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:0.625rem 0.875rem;margin-bottom:0.5rem;display:flex;justify-content:space-between;align-items:center;">
+              <span style="color:white;font-size:0.85rem;font-weight:500;">Remote Dev</span>
+              <span style="color:#22c55e;font-size:0.75rem;font-weight:700;">●  Hiring</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section class="py-6" id="features" style="padding:5rem 0;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="cs-section-badge">Features</span>
+      <h2 class="cs-section-title">Everything You Need to Land Your Dream Job</h2>
+      <p class="cs-section-subtitle">Powerful tools built specifically for Filipino job seekers in the local and global market.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(37,99,235,0.1);">🤖</div>
+          <h5 class="fw-700">AI Resume Builder</h5>
+          <p class="text-muted small">Create professional resumes in minutes with AI-powered suggestions and real-time scoring.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(34,197,94,0.1);">🎯</div>
+          <h5 class="fw-700">Smart Job Matching</h5>
+          <p class="text-muted small">Our algorithm matches your skills to the best jobs, showing match percentages for every listing.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(124,58,237,0.1);">🎙️</div>
+          <h5 class="fw-700">Mock Interview Practice</h5>
+          <p class="text-muted small">Practice with common interview questions and receive instant AI feedback on your answers.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(245,158,11,0.1);">🌐</div>
+          <h5 class="fw-700">Local & Global Jobs</h5>
+          <p class="text-muted small">Discover BPO, IT, remote work, and overseas opportunities all in one platform.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(239,68,68,0.1);">📊</div>
+          <h5 class="fw-700">Resume Score Analysis</h5>
+          <p class="text-muted small">Get a detailed score with actionable feedback to improve your resume's impact.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(14,165,233,0.1);">👥</div>
+          <h5 class="fw-700">Recruiter Dashboard</h5>
+          <p class="text-muted small">Recruiters can post jobs, browse applicants, and review scores in one easy interface.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section style="padding:5rem 0;background:var(--cs-gray-100);" id="how-it-works">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="cs-section-badge">How It Works</span>
+      <h2 class="cs-section-title">Get Hired in 4 Simple Steps</h2>
+    </div>
+    <div class="row g-4 text-center">
+      <div class="col-md-3">
+        <div class="step-number">1</div>
+        <h6 class="fw-700">Create Account</h6>
+        <p class="text-muted small">Sign up for free and complete your profile in under 2 minutes.</p>
+      </div>
+      <div class="col-md-3">
+        <div class="step-number">2</div>
+        <h6 class="fw-700">Build Your Resume</h6>
+        <p class="text-muted small">Use our AI-powered builder to create a professional resume with a high score.</p>
+      </div>
+      <div class="col-md-3">
+        <div class="step-number">3</div>
+        <h6 class="fw-700">Match to Jobs</h6>
+        <p class="text-muted small">Discover jobs that match your skills with our smart matching algorithm.</p>
+      </div>
+      <div class="col-md-3">
+        <div class="step-number">4</div>
+        <h6 class="fw-700">Get Hired!</h6>
+        <p class="text-muted small">Apply confidently after practicing with our mock interview tool.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── JOB CATEGORIES ── -->
+<section style="padding:5rem 0;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="cs-section-badge">Job Categories</span>
+      <h2 class="cs-section-title">Jobs for Every Filipino</h2>
+    </div>
+    <!-- Removed broken |split loop; categories are hardcoded below -->
+    <div class="row g-3">
+      <div class="col-6 col-md-4 col-lg-2">
+        <a href="{% url 'job_list' %}?category=bpo" class="job-card text-center d-block py-3">
+          <div class="fs-2 mb-2">🎧</div>
+          <div class="fw-600 small">BPO / Call Center</div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <a href="{% url 'job_list' %}?category=it" class="job-card text-center d-block py-3">
+          <div class="fs-2 mb-2">💻</div>
+          <div class="fw-600 small">IT Jobs</div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <a href="{% url 'job_list' %}?category=remote" class="job-card text-center d-block py-3">
+          <div class="fs-2 mb-2">🏠</div>
+          <div class="fw-600 small">Remote Work</div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <a href="{% url 'job_list' %}?category=overseas" class="job-card text-center d-block py-3">
+          <div class="fs-2 mb-2">✈️</div>
+          <div class="fw-600 small">Overseas / OFW</div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <a href="{% url 'job_list' %}?category=healthcare" class="job-card text-center d-block py-3">
+          <div class="fs-2 mb-2">🏥</div>
+          <div class="fw-600 small">Healthcare</div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <a href="{% url 'job_list' %}?category=finance" class="job-card text-center d-block py-3">
+          <div class="fs-2 mb-2">💰</div>
+          <div class="fw-600 small">Finance</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section style="padding:5rem 0;background:var(--cs-gray-100);" id="testimonials">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="cs-section-badge">Testimonials</span>
+      <h2 class="cs-section-title">What Our Users Say</h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="testimonial-card">
+          <div class="d-flex mb-3">
+            {% for i in "12345" %}<i class="bi bi-star-fill text-warning me-1"></i>{% endfor %}
+          </div>
+          <p class="text-muted">"CareerSync helped me land my first BPO job! The resume builder and interview practice made me so much more confident."</p>
+          <div class="d-flex align-items-center gap-3 mt-3">
+            <div class="testimonial-avatar">MR</div>
+            <div>
+              <div class="fw-700 small">Maria Reyes</div>
+              <div class="text-muted" style="font-size:0.8rem;">Fresh Graduate, Cebu</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="testimonial-card">
+          <div class="d-flex mb-3">
+            {% for i in "12345" %}<i class="bi bi-star-fill text-warning me-1"></i>{% endfor %}
+          </div>
+          <p class="text-muted">"The job matching feature is incredible. It showed me jobs I never would have found otherwise, and the match percentage is surprisingly accurate."</p>
+          <div class="d-flex align-items-center gap-3 mt-3">
+            <div class="testimonial-avatar">JM</div>
+            <div>
+              <div class="fw-700 small">Jose Mendoza</div>
+              <div class="text-muted" style="font-size:0.8rem;">IT Professional, Manila</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="testimonial-card">
+          <div class="d-flex mb-3">
+            {% for i in "12345" %}<i class="bi bi-star-fill text-warning me-1"></i>{% endfor %}
+          </div>
+          <p class="text-muted">"As an OFW returnee, CareerSync made transitioning back to local work seamless. Found a remote job with a US company in just 2 weeks!"</p>
+          <div class="d-flex align-items-center gap-3 mt-3">
+            <div class="testimonial-avatar">AC</div>
+            <div>
+              <div class="fw-700 small">Ana Cruz</div>
+              <div class="text-muted" style="font-size:0.8rem;">Remote Worker, Davao</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRICING ── -->
+<section style="padding:5rem 0;" id="pricing">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="cs-section-badge">Pricing</span>
+      <h2 class="cs-section-title">Simple, Transparent Pricing</h2>
+      <p class="cs-section-subtitle">Start free. Upgrade when you're ready.</p>
+    </div>
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-4">
+        <div class="pricing-card">
+          <h4 class="fw-800">Free</h4>
+          <div class="pricing-price my-3">₱0 <span>/month</span></div>
+          <ul class="list-unstyled">
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>1 Resume</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Browse Jobs</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>3 Interview Sessions</li>
+            <li class="mb-2 text-muted"><i class="bi bi-x-circle me-2"></i>Resume Score Analysis</li>
+            <li class="mb-2 text-muted"><i class="bi bi-x-circle me-2"></i>Priority Job Matching</li>
+          </ul>
+          <a href="{% url 'register' %}" class="btn-cs-outline btn w-100 mt-3">Get Started</a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="pricing-card featured">
+          <span class="pricing-badge">Most Popular</span>
+          <h4 class="fw-800">Pro</h4>
+          <div class="pricing-price my-3">₱299 <span>/month</span></div>
+          <ul class="list-unstyled">
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Unlimited Resumes</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Priority Job Matching</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Unlimited Interview Practice</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Resume Score Analysis</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>PDF Export</li>
+          </ul>
+          <a href="{% url 'register' %}" class="btn-cs-primary btn w-100 mt-3">Get Pro</a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="pricing-card">
+          <h4 class="fw-800">Recruiter</h4>
+          <div class="pricing-price my-3">₱999 <span>/month</span></div>
+          <ul class="list-unstyled">
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Post Unlimited Jobs</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>View All Applicants</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Resume Score Access</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Advanced Filters</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Analytics Dashboard</li>
+          </ul>
+          <a href="{% url 'register' %}" class="btn-cs-outline btn w-100 mt-3">Start Hiring</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section style="padding:4rem 0;">
+  <div class="container">
+    <div class="cs-cta">
+      <div style="position:relative;z-index:1;">
+        <h2 class="fw-800 fs-1 mb-3">Ready to Launch Your Career?</h2>
+        <p class="mb-4" style="color:rgba(255,255,255,0.8);font-size:1.1rem;">Join thousands of Filipino professionals who've found their dream jobs with CareerSync.</p>
+        <div class="d-flex flex-wrap gap-3 justify-content-center">
+          <a href="{% url 'register' %}" class="btn btn-light btn-lg fw-700 px-5" style="border-radius:10px;color:#2563eb;">
+            <i class="bi bi-rocket-takeoff me-2"></i>Start for Free
+          </a>
+          <a href="{% url 'job_list' %}" class="btn btn-outline-light btn-lg px-5 fw-600" style="border-radius:10px;">
+            <i class="bi bi-briefcase me-2"></i>Browse Jobs
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Counter animation for hero stats - the data-counter divs
+// Already handled by main.js IntersectionObserver
+</script>
+{% endblock %}

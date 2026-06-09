@@ -1,0 +1,90 @@
+{% extends 'core/base_dashboard.html' %}
+{% block title %}Interview Question — CareerSync{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h4 class="fw-800 mb-1">{{ session.title }}</h4>
+    <p class="text-muted mb-0">Question {{ answered_count|add:"1" }} of 5</p>
+  </div>
+  <a href="{% url 'interview_home' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;">
+    <i class="bi bi-x-lg me-1"></i>Exit
+  </a>
+</div>
+
+<!-- Progress -->
+<div class="mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <span class="text-muted small fw-600">Progress</span>
+    <span class="fw-700 small text-primary">{{ progress }}%</span>
+  </div>
+  <div class="cs-progress" style="height:12px;">
+    <div class="cs-progress-bar" data-width="{{ progress }}" style="width:0;"></div>
+  </div>
+  <div class="d-flex justify-content-between mt-1">
+    {% for i in "12345" %}
+    <div class="rounded-circle d-flex align-items-center justify-content-center fw-700"
+         style="width:28px;height:28px;font-size:0.75rem;
+         background:{% if forloop.counter <= answered_count %}#22c55e{% elif forloop.counter == answered_count|add:'1' %}#2563eb{% else %}var(--cs-gray-200){% endif %};
+         color:{% if forloop.counter <= answered_count or forloop.counter == answered_count|add:'1' %}white{% else %}var(--cs-gray-400){% endif %};">
+      {{ forloop.counter }}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Question Card -->
+<div class="question-card mb-4">
+  <div class="d-flex align-items-center gap-2 mb-3" style="color:rgba(255,255,255,0.6);font-size:0.85rem;">
+    <i class="bi bi-mic-fill"></i>
+    <span>{{ question.get_category_display }} Question</span>
+  </div>
+  <h4 class="fw-700" style="color:white;position:relative;z-index:1;">{{ question.question }}</h4>
+  {% if question.tip %}
+  <div class="mt-3 p-3 rounded" style="background:rgba(255,255,255,0.08);font-size:0.85rem;color:rgba(255,255,255,0.7);">
+    <i class="bi bi-lightbulb-fill text-warning me-2"></i><strong>Tip:</strong> {{ question.tip }}
+  </div>
+  {% endif %}
+</div>
+
+<!-- Answer Form -->
+<div class="cs-card">
+  <div class="cs-card-header">
+    <h6 class="fw-700 mb-0"><i class="bi bi-pencil-fill text-primary me-2"></i>Your Answer</h6>
+  </div>
+  <div class="cs-card-body">
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        {{ form.answer }}
+        <div class="form-text mt-2">
+          <i class="bi bi-info-circle me-1"></i>
+          Aim for 3–5 sentences. Use specific examples from your experience. Mention results and impact.
+        </div>
+      </div>
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="text-muted small">
+          <span id="wordCount">0</span> words · Aim for 40+
+        </div>
+        <button type="submit" class="btn-cs-primary btn px-5 fw-700">
+          <i class="bi bi-arrow-right me-2"></i>Submit Answer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const textarea = document.querySelector('textarea[name="answer"]');
+const counter = document.getElementById('wordCount');
+if (textarea && counter) {
+  textarea.addEventListener('input', () => {
+    const words = textarea.value.trim().split(/\s+/).filter(w => w.length > 0);
+    counter.textContent = words.length;
+    counter.className = words.length >= 40 ? 'text-success fw-700' : words.length >= 15 ? 'text-warning fw-600' : '';
+  });
+}
+</script>
+{% endblock %}

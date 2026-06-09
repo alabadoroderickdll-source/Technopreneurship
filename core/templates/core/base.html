@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}CareerSync — Connecting Filipino Talent{% endblock %}</title>
+  <meta name="description" content="AI-powered resume building, interview preparation, and smart job matching for Filipino professionals." />
+
+  <!-- Bootstrap 5 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <!-- CareerSync CSS -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="cs-navbar">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between py-2">
+        <a href="{% url 'landing' %}" class="cs-brand text-decoration-none">
+          <i class="bi bi-briefcase-fill me-1"></i>CareerSync
+        </a>
+
+        <!-- Desktop Nav -->
+        <div class="d-none d-lg-flex align-items-center gap-1">
+          <a href="{% url 'landing' %}" class="cs-nav-link">Home</a>
+          <a href="{% url 'job_list' %}" class="cs-nav-link">Jobs</a>
+          <a href="{% url 'about' %}" class="cs-nav-link">About</a>
+          <a href="{% url 'contact' %}" class="cs-nav-link">Contact</a>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <button id="darkToggle" class="dark-toggle" title="Toggle dark mode">
+            <i class="bi bi-moon-fill"></i>
+          </button>
+
+          {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}" class="btn-cs-outline btn-sm">
+              <i class="bi bi-grid-3x3-gap-fill me-1"></i>Dashboard
+            </a>
+            <a href="{% url 'logout' %}" class="btn-cs-primary btn-sm">
+              <i class="bi bi-box-arrow-right me-1"></i>Logout
+            </a>
+          {% else %}
+            <a href="{% url 'login' %}" class="btn-cs-outline btn-sm">Login</a>
+            <a href="{% url 'register' %}" class="btn-cs-primary btn-sm">Get Started</a>
+          {% endif %}
+
+          <!-- Mobile Toggle -->
+          <button class="btn btn-sm d-lg-none border-0" data-bs-toggle="collapse" data-bs-target="#mobileNav">
+            <i class="bi bi-list fs-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Nav -->
+      <div class="collapse d-lg-none pb-2" id="mobileNav">
+        <div class="d-flex flex-column gap-1">
+          <a href="{% url 'landing' %}" class="cs-nav-link">Home</a>
+          <a href="{% url 'job_list' %}" class="cs-nav-link">Jobs</a>
+          <a href="{% url 'about' %}" class="cs-nav-link">About</a>
+          <a href="{% url 'contact' %}" class="cs-nav-link">Contact</a>
+          {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}" class="cs-nav-link">Dashboard</a>
+            <a href="{% url 'logout' %}" class="cs-nav-link">Logout</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Flash Messages -->
+  {% if messages %}
+    <div class="position-fixed top-0 end-0 p-3" style="z-index:9999; margin-top:65px;">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm" role="alert"
+             style="min-width:300px; border-radius:10px;">
+          {% if message.tags == 'success' %}<i class="bi bi-check-circle-fill me-2"></i>
+          {% elif message.tags == 'error' or message.tags == 'danger' %}<i class="bi bi-x-circle-fill me-2"></i>
+          {% elif message.tags == 'warning' %}<i class="bi bi-exclamation-triangle-fill me-2"></i>
+          {% else %}<i class="bi bi-info-circle-fill me-2"></i>{% endif %}
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% block body %}{% endblock %}
+
+  <!-- Footer -->
+  {% block footer %}
+  <footer class="cs-footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <h5 class="cs-brand fs-4 mb-3">
+            <i class="bi bi-briefcase-fill me-1"></i>CareerSync
+          </h5>
+          <p class="small" style="color:rgba(255,255,255,0.5);">
+            Connecting Filipino Talent with Better Career Opportunities.
+            AI-powered resume building and smart job matching.
+          </p>
+          <div class="d-flex gap-3 mt-3">
+            <a href="#" class="fs-5"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="fs-5"><i class="bi bi-linkedin"></i></a>
+            <a href="#" class="fs-5"><i class="bi bi-twitter-x"></i></a>
+            <a href="#" class="fs-5"><i class="bi bi-instagram"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-2 col-6">
+          <h5 style="font-size:0.9rem;">Product</h5>
+          <ul class="list-unstyled small">
+            <li class="mb-2"><a href="{% url 'job_list' %}">Browse Jobs</a></li>
+            <li class="mb-2"><a href="{% url 'register' %}">Resume Builder</a></li>
+            <li class="mb-2"><a href="{% url 'register' %}">Interview Prep</a></li>
+            <li class="mb-2"><a href="{% url 'about' %}#pricing">Pricing</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2 col-6">
+          <h5 style="font-size:0.9rem;">Company</h5>
+          <ul class="list-unstyled small">
+            <li class="mb-2"><a href="{% url 'about' %}">About Us</a></li>
+            <li class="mb-2"><a href="{% url 'contact' %}">Contact</a></li>
+            <li class="mb-2"><a href="#">Careers</a></li>
+            <li class="mb-2"><a href="#">Blog</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2 col-6">
+          <h5 style="font-size:0.9rem;">For Job Seekers</h5>
+          <ul class="list-unstyled small">
+            <li class="mb-2"><a href="{% url 'job_list' %}?category=bpo">BPO Jobs</a></li>
+            <li class="mb-2"><a href="{% url 'job_list' %}?category=it">IT Jobs</a></li>
+            <li class="mb-2"><a href="{% url 'job_list' %}?category=remote">Remote Jobs</a></li>
+            <li class="mb-2"><a href="{% url 'job_list' %}?category=overseas">OFW Jobs</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2 col-6">
+          <h5 style="font-size:0.9rem;">Legal</h5>
+          <ul class="list-unstyled small">
+            <li class="mb-2"><a href="#">Privacy Policy</a></li>
+            <li class="mb-2"><a href="#">Terms of Service</a></li>
+            <li class="mb-2"><a href="#">Cookie Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="cs-footer-bottom d-flex flex-wrap justify-content-between align-items-center">
+        <span>&copy; 2024 CareerSync. All rights reserved.</span>
+        <span>Made with <i class="bi bi-heart-fill text-danger"></i> for Filipino Talent</span>
+      </div>
+    </div>
+  </footer>
+  {% endblock %}
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

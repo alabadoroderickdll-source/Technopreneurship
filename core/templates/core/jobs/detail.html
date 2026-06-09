@@ -1,0 +1,131 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ job.title }} at {{ job.company }} — CareerSync{% endblock %}
+
+{% block body %}
+<div class="cs-page-header">
+  <div class="container">
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <a href="{% url 'job_list' %}" class="btn btn-sm btn-outline-light" style="border-radius:8px;"><i class="bi bi-arrow-left"></i></a>
+      <span class="text-muted small">Back to Jobs</span>
+    </div>
+    <div class="d-flex align-items-start gap-4 flex-wrap">
+      <div class="rounded-3 d-flex align-items-center justify-content-center fw-900 text-white flex-shrink-0"
+           style="width:72px;height:72px;font-size:2rem;background:linear-gradient(135deg,#2563eb,#7c3aed);">
+        {{ job.company.0|upper }}
+      </div>
+      <div class="flex-grow-1">
+        <h1 class="fw-800 mb-1" style="font-size:1.75rem;">{{ job.title }}</h1>
+        <div class="d-flex flex-wrap gap-3 align-items-center" style="color:#94a3b8;">
+          <span><i class="bi bi-building me-1"></i>{{ job.company }}</span>
+          <span><i class="bi bi-geo-alt me-1"></i>{{ job.location }}</span>
+          <span><i class="bi bi-clock me-1"></i>{{ job.created_at|timesince }} ago</span>
+        </div>
+        <div class="d-flex flex-wrap gap-2 mt-2">
+          <span class="cs-badge cs-badge-primary">{{ job.get_category_display }}</span>
+          <span class="cs-badge cs-badge-info">{{ job.get_job_type_display }}</span>
+          {% if job.salary_min and job.salary_min > 0 %}
+          <span class="cs-badge cs-badge-success">₱{{ job.salary_min|floatformat:0 }}{% if job.salary_max %} – ₱{{ job.salary_max|floatformat:0 }}{% endif %}/mo</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="d-flex flex-column gap-2 align-items-end">
+        {% if user.is_authenticated %}
+          <span class="match-badge {% if match_pct >= 70 %}match-high{% elif match_pct >= 40 %}match-mid{% else %}match-low{% endif %} fs-6 px-3 py-2">
+            <i class="bi bi-graph-up me-1"></i>{{ match_pct }}% Match
+          </span>
+        {% endif %}
+        {% if already_applied %}
+          <span class="cs-badge cs-badge-success py-2 px-3" style="font-size:0.875rem;">
+            <i class="bi bi-check-circle me-1"></i>Applied
+          </span>
+        {% elif user.is_authenticated %}
+          <a href="{% url 'job_apply' job.pk %}" class="btn-cs-primary btn">
+            <i class="bi bi-send me-1"></i>Apply Now
+          </a>
+        {% else %}
+          <a href="{% url 'login' %}?next={{ request.path }}" class="btn-cs-primary btn">
+            <i class="bi bi-box-arrow-in-right me-1"></i>Login to Apply
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container py-4">
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="cs-card mb-4">
+        <div class="cs-card-header"><h6 class="fw-700 mb-0">Job Description</h6></div>
+        <div class="cs-card-body" style="line-height:1.8;">{{ job.description|linebreaks }}</div>
+      </div>
+      {% if job.requirements %}
+      <div class="cs-card mb-4">
+        <div class="cs-card-header"><h6 class="fw-700 mb-0">Requirements</h6></div>
+        <div class="cs-card-body" style="line-height:1.8;">{{ job.requirements|linebreaks }}</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="col-lg-4">
+      <div class="cs-card mb-4">
+        <div class="cs-card-header"><h6 class="fw-700 mb-0"><i class="bi bi-stars text-warning me-2"></i>Required Skills</h6></div>
+        <div class="cs-card-body">
+          {% if user.is_authenticated and resume %}
+            {% with resume_skills=resume.skills.all %}
+            {% for skill in job.get_skills_list %}
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="small fw-600">{{ skill }}</span>
+              {% for rs in resume_skills %}
+                {% if skill|lower in rs.name|lower or rs.name|lower in skill|lower %}
+                  <span class="cs-badge cs-badge-success"><i class="bi bi-check me-1"></i>Matched</span>
+                  {% endif %}
+              {% endfor %}
+            </div>
+            {% endfor %}
+            {% endwith %}
+          {% else %}
+            <div class="d-flex flex-wrap gap-2">
+              {% for skill in job.get_skills_list %}
+              <span class="skill-tag">{{ skill }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="cs-card mb-4">
+        <div class="cs-card-header"><h6 class="fw-700 mb-0">Job Overview</h6></div>
+        <div class="cs-card-body">
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex gap-2"><i class="bi bi-building text-primary mt-1"></i><div><div class="text-muted small">Company</div><div class="fw-600 small">{{ job.company }}</div></div></div>
+            <div class="d-flex gap-2"><i class="bi bi-geo-alt text-primary mt-1"></i><div><div class="text-muted small">Location</div><div class="fw-600 small">{{ job.location }}</div></div></div>
+            <div class="d-flex gap-2"><i class="bi bi-briefcase text-primary mt-1"></i><div><div class="text-muted small">Job Type</div><div class="fw-600 small">{{ job.get_job_type_display }}</div></div></div>
+            <div class="d-flex gap-2"><i class="bi bi-tag text-primary mt-1"></i><div><div class="text-muted small">Category</div><div class="fw-600 small">{{ job.get_category_display }}</div></div></div>
+            {% if job.salary_min and job.salary_min > 0 %}
+            <div class="d-flex gap-2"><i class="bi bi-cash text-success mt-1"></i><div><div class="text-muted small">Salary</div><div class="fw-600 small text-success">₱{{ job.salary_min|floatformat:0 }} – ₱{{ job.salary_max|floatformat:0 }}/mo</div></div></div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      {% if not already_applied %}
+        {% if user.is_authenticated %}
+        <a href="{% url 'job_apply' job.pk %}" class="btn-cs-primary btn w-100 py-3 fw-700">
+          <i class="bi bi-send-fill me-2"></i>Apply for This Job
+        </a>
+        {% else %}
+        <a href="{% url 'register' %}" class="btn-cs-primary btn w-100 py-3 fw-700">
+          <i class="bi bi-person-plus me-2"></i>Sign Up to Apply
+        </a>
+        {% endif %}
+      {% else %}
+        <div class="alert alert-success text-center py-3" style="border-radius:10px;">
+          <i class="bi bi-check-circle-fill me-2"></i>You've already applied to this job!
+        </div>
+        <a href="{% url 'my_applications' %}" class="btn-cs-outline btn w-100 mt-2">View My Applications</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

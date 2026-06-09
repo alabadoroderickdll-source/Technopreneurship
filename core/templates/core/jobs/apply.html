@@ -1,0 +1,55 @@
+{% extends 'core/base_dashboard.html' %}
+{% block title %}Apply — {{ job.title }} — CareerSync{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-3 mb-4">
+  <a href="{% url 'job_detail' job.pk %}" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;"><i class="bi bi-arrow-left"></i></a>
+  <div>
+    <h4 class="fw-800 mb-0">Apply for {{ job.title }}</h4>
+    <p class="text-muted small mb-0">{{ job.company }} · {{ job.location }}</p>
+  </div>
+</div>
+
+<div class="row g-4 justify-content-center">
+  <div class="col-lg-7">
+    {% if match_pct > 0 %}
+    <div class="cs-card mb-4" style="border-left:4px solid {% if match_pct >= 70 %}#22c55e{% elif match_pct >= 40 %}#2563eb{% else %}#94a3b8{% endif %};">
+      <div class="cs-card-body py-3 d-flex align-items-center gap-3">
+        <div class="fw-800 fs-3 {% if match_pct >= 70 %}text-success{% elif match_pct >= 40 %}text-primary{% else %}text-muted{% endif %}">{{ match_pct }}%</div>
+        <div>
+          <div class="fw-700 small">Job Match Score</div>
+          <div class="text-muted small">{% if match_pct >= 70 %}Great match! Your skills align well with this role.{% elif match_pct >= 40 %}Decent match. Consider highlighting transferable skills.{% else %}Low match. Make sure to address skill gaps in your cover letter.{% endif %}</div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="cs-card">
+      <div class="cs-card-header">
+        <h6 class="fw-700 mb-0"><i class="bi bi-send-fill text-primary me-2"></i>Submit Application</h6>
+      </div>
+      <div class="cs-card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Select Resume</label>
+            {{ form.resume }}
+            {% if form.resume.errors %}<div class="text-danger small mt-1">{{ form.resume.errors.0 }}</div>{% endif %}
+            <div class="form-text">Don't have a resume? <a href="{% url 'resume_create' %}">Create one first →</a></div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Cover Letter <span class="text-muted">(optional)</span></label>
+            {{ form.cover_letter }}
+          </div>
+          <div class="d-flex gap-3 justify-content-end">
+            <a href="{% url 'job_detail' job.pk %}" class="btn btn-outline-secondary" style="border-radius:8px;">Cancel</a>
+            <button type="submit" class="btn-cs-primary btn px-4 fw-700">
+              <i class="bi bi-send me-2"></i>Submit Application
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

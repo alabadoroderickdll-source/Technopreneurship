@@ -1,0 +1,95 @@
+{% extends 'core/base_dashboard.html' %}
+{% block title %}Interview Results — CareerSync{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h4 class="fw-800 mb-1">Session Results</h4>
+    <p class="text-muted mb-0">{{ session.title }}</p>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{% url 'interview_start' %}" class="btn-cs-accent btn btn-sm">
+      <i class="bi bi-arrow-repeat me-1"></i>Practice Again
+    </a>
+    <a href="{% url 'interview_home' %}" class="btn-cs-outline btn btn-sm">
+      <i class="bi bi-house me-1"></i>Home
+    </a>
+  </div>
+</div>
+
+<!-- Score Summary -->
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="cs-card text-center">
+      <div class="cs-card-body py-4">
+        <p class="text-muted small fw-600 text-uppercase mb-3">Average Score</p>
+        <div class="score-circle mx-auto mb-3
+          {% if avg_score >= 80 %}score-excellent
+          {% elif avg_score >= 60 %}score-good
+          {% elif avg_score >= 40 %}score-fair
+          {% else %}score-poor{% endif %}">
+          <span>{{ avg_score }}</span>
+        </div>
+        <div class="fw-700">
+          {% if avg_score >= 80 %}Excellent Performance!
+          {% elif avg_score >= 60 %}Good Job!
+          {% elif avg_score >= 40 %}Keep Practicing
+          {% else %}Needs Improvement{% endif %}
+        </div>
+        <div class="cs-progress mt-3">
+          <div class="cs-progress-bar" data-width="{{ avg_score }}" style="width:0;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="cs-card h-100">
+      <div class="cs-card-header"><h6 class="fw-700 mb-0"><i class="bi bi-lightbulb-fill text-warning me-2"></i>Performance Insights</h6></div>
+      <div class="cs-card-body d-flex flex-column gap-3">
+        {% if avg_score >= 80 %}
+        <div class="d-flex gap-2"><i class="bi bi-check-circle-fill text-success mt-1"></i><span class="small">Outstanding answers! You showed depth and specificity in your responses.</span></div>
+        <div class="d-flex gap-2"><i class="bi bi-check-circle-fill text-success mt-1"></i><span class="small">Excellent use of relevant keywords and action verbs.</span></div>
+        <div class="d-flex gap-2"><i class="bi bi-check-circle-fill text-success mt-1"></i><span class="small">Keep up this confidence level in real interviews!</span></div>
+        {% elif avg_score >= 60 %}
+        <div class="d-flex gap-2"><i class="bi bi-check-circle-fill text-success mt-1"></i><span class="small">Good overall performance. Your answers showed relevant experience.</span></div>
+        <div class="d-flex gap-2"><i class="bi bi-exclamation-triangle-fill text-warning mt-1"></i><span class="small">Try adding more quantifiable results (e.g., "increased sales by 20%").</span></div>
+        <div class="d-flex gap-2"><i class="bi bi-info-circle-fill text-info mt-1"></i><span class="small">Practice the STAR method: Situation, Task, Action, Result.</span></div>
+        {% else %}
+        <div class="d-flex gap-2"><i class="bi bi-exclamation-triangle-fill text-warning mt-1"></i><span class="small">Your answers need more detail and specific examples.</span></div>
+        <div class="d-flex gap-2"><i class="bi bi-info-circle-fill text-info mt-1"></i><span class="small">Try to write at least 50 words per answer.</span></div>
+        <div class="d-flex gap-2"><i class="bi bi-info-circle-fill text-info mt-1"></i><span class="small">Use the STAR method: Situation, Task, Action, Result.</span></div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Detailed Answers -->
+<h6 class="fw-700 mb-3"><i class="bi bi-list-check text-primary me-2"></i>Answer Review</h6>
+{% for answer in answers %}
+<div class="cs-card mb-3">
+  <div class="cs-card-header d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-2">
+      <span class="cs-badge cs-badge-primary">Q{{ forloop.counter }}</span>
+      <span class="small fw-600">{{ answer.question.get_category_display }}</span>
+    </div>
+    <span class="fw-800 {% if answer.score >= 70 %}text-success{% elif answer.score >= 50 %}text-primary{% else %}text-warning{% endif %}">
+      {{ answer.score }}/100
+    </span>
+  </div>
+  <div class="cs-card-body">
+    <p class="fw-600 mb-3" style="color:var(--cs-primary);">{{ answer.question.question }}</p>
+    <div class="p-3 rounded mb-3" style="background:var(--cs-gray-100);font-size:0.9rem;line-height:1.7;">
+      {{ answer.answer_text }}
+    </div>
+    <div class="d-flex gap-2 align-items-start">
+      <i class="bi bi-robot text-primary flex-shrink-0 mt-1"></i>
+      <div class="small text-muted"><strong>AI Feedback:</strong> {{ answer.feedback }}</div>
+    </div>
+    <div class="cs-progress mt-3" style="height:6px;">
+      <div class="cs-progress-bar" data-width="{{ answer.score }}" style="width:0;"></div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}

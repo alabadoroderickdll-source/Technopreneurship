@@ -1,0 +1,145 @@
+{% extends 'core/base.html' %}
+{% block title %}Browse Jobs — CareerSync{% endblock %}
+
+{% block body %}
+<div class="cs-page-header">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <h1 class="fw-800 mb-2">Browse Jobs</h1>
+        <p class="mb-0" style="color:#94a3b8;">{{ total }} job{{ total|pluralize }} found</p>
+      </div>
+      <div class="col-lg-6 mt-3 mt-lg-0">
+        <form method="get" class="d-flex gap-2">
+          <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search jobs, companies, skills…" style="border-radius:10px;">
+          <button type="submit" class="btn-cs-primary btn px-3" style="white-space:nowrap;">
+            <i class="bi bi-search"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container py-4">
+  <div class="row g-4">
+    <!-- Filters Sidebar -->
+    <div class="col-lg-3">
+      <div class="cs-sidebar">
+        <h6 class="fw-700 mb-3"><i class="bi bi-funnel-fill text-primary me-2"></i>Filters</h6>
+        <form method="get">
+          {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+          <div class="mb-3">
+            <label class="form-label">Category</label>
+            <select name="category" class="form-select form-select-sm" onchange="this.form.submit()">
+              <option value="">All Categories</option>
+              {% for val, label in categories %}
+              <option value="{{ val }}" {% if category == val %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Job Type</label>
+            <select name="type" class="form-select form-select-sm" onchange="this.form.submit()">
+              <option value="">All Types</option>
+              {% for val, label in types %}
+              <option value="{{ val }}" {% if job_type == val %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Location</label>
+            <input type="text" name="location" value="{{ location }}" class="form-control form-control-sm" placeholder="e.g. Manila, Cebu">
+          </div>
+          <button type="submit" class="btn-cs-primary btn btn-sm w-100">Apply Filters</button>
+          {% if query or category or job_type or location %}
+          <a href="{% url 'job_list' %}" class="btn btn-sm btn-outline-secondary w-100 mt-2">Clear Filters</a>
+          {% endif %}
+        </form>
+
+        <div class="divider"></div>
+
+        <h6 class="fw-700 mb-3 small">Quick Browse</h6>
+        <div class="d-flex flex-column gap-1">
+          <a href="{% url 'job_list' %}?category=bpo" class="cs-nav-link py-1 px-2 rounded small">🎧 BPO / Call Center</a>
+          <a href="{% url 'job_list' %}?category=it" class="cs-nav-link py-1 px-2 rounded small">💻 IT Jobs</a>
+          <a href="{% url 'job_list' %}?category=remote" class="cs-nav-link py-1 px-2 rounded small">🏠 Remote Work</a>
+          <a href="{% url 'job_list' %}?category=overseas" class="cs-nav-link py-1 px-2 rounded small">✈️ Overseas / OFW</a>
+          <a href="{% url 'job_list' %}?category=healthcare" class="cs-nav-link py-1 px-2 rounded small">🏥 Healthcare</a>
+          <a href="{% url 'job_list' %}?category=finance" class="cs-nav-link py-1 px-2 rounded small">💰 Finance</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Job Listings -->
+    <div class="col-lg-9">
+      {% if not user.is_authenticated %}
+      <div class="alert alert-info d-flex align-items-center gap-2 mb-4" style="border-radius:10px;">
+        <i class="bi bi-info-circle-fill"></i>
+        <span><a href="{% url 'login' %}" class="fw-600">Login</a> or <a href="{% url 'register' %}" class="fw-600">create an account</a> to see your job match percentages.</span>
+      </div>
+      {% endif %}
+
+      {% if jobs_with_match %}
+        <div class="row g-3">
+          {% for job, pct in jobs_with_match %}
+          <div class="col-12">
+            <a href="{% url 'job_detail' job.pk %}" class="job-card d-block">
+              <div class="d-flex align-items-start gap-3">
+                <div class="rounded-2 d-flex align-items-center justify-content-center fw-800 text-white flex-shrink-0"
+                     style="width:52px;height:52px;font-size:1.3rem;background:linear-gradient(135deg,#2563eb,#7c3aed);">
+                  {{ job.company.0|upper }}
+                </div>
+                <div class="flex-grow-1 min-w-0">
+                  <div class="d-flex align-items-start justify-content-between gap-2 flex-wrap">
+                    <div>
+                      <h6 class="fw-700 mb-0">{{ job.title }}</h6>
+                      <div class="job-card-company">{{ job.company }} · <i class="bi bi-geo-alt"></i> {{ job.location }}</div>
+                    </div>
+                    {% if user.is_authenticated %}
+                    <span class="match-badge flex-shrink-0
+                      {% if pct >= 70 %}match-high{% elif pct >= 40 %}match-mid{% else %}match-low{% endif %}">
+                      <i class="bi bi-graph-up me-1"></i>{{ pct }}% Match
+                    </span>
+                    {% endif %}
+                  </div>
+                  <div class="d-flex flex-wrap gap-2 mt-2">
+                    <span class="cs-badge cs-badge-primary">{{ job.get_category_display }}</span>
+                    <span class="cs-badge cs-badge-info">{{ job.get_job_type_display }}</span>
+                    {% if job.salary_min and job.salary_min > 0 %}
+                    <span class="cs-badge cs-badge-success">
+                      <i class="bi bi-cash me-1"></i>₱{{ job.salary_min|floatformat:0 }}{% if job.salary_max %} – ₱{{ job.salary_max|floatformat:0 }}{% endif %}
+                    </span>
+                    {% endif %}
+                  </div>
+                  <div class="d-flex flex-wrap gap-1 mt-2">
+                    {% for skill in job.get_skills_list|slice:":5" %}
+                    <span class="skill-tag skill-tag-gray">{{ skill }}</span>
+                    {% endfor %}
+                    {% if job.get_skills_list|length > 5 %}
+                    <span class="skill-tag skill-tag-gray">+{{ job.get_skills_list|length|add:"-5" }} more</span>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="text-muted flex-shrink-0 d-none d-md-block" style="font-size:0.75rem;">
+                  {{ job.created_at|timesince }} ago
+                </div>
+              </div>
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="cs-card">
+          <div class="cs-card-body text-center py-5">
+            <i class="bi bi-search fs-1 text-muted d-block mb-3 opacity-25"></i>
+            <h5 class="fw-700">No jobs found</h5>
+            <p class="text-muted">Try adjusting your search filters.</p>
+            <a href="{% url 'job_list' %}" class="btn-cs-primary btn">Clear Filters</a>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

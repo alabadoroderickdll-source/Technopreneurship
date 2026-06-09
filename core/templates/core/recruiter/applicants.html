@@ -1,0 +1,70 @@
+{% extends 'core/base_dashboard.html' %}
+{% block title %}Applicants — {{ job.title }} — CareerSync{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-3 mb-4">
+  <a href="{% url 'recruiter_dashboard' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;"><i class="bi bi-arrow-left"></i></a>
+  <div>
+    <h4 class="fw-800 mb-0">Applicants for {{ job.title }}</h4>
+    <p class="text-muted small mb-0">{{ job.company }} · {{ applications.count }} applicant{{ applications.count|pluralize }}</p>
+  </div>
+</div>
+
+{% if applications %}
+<div class="row g-3">
+  {% for app in applications %}
+  <div class="col-md-6">
+    <div class="cs-card">
+      <div class="cs-card-body">
+        <div class="d-flex align-items-start gap-3 mb-3">
+          <div class="rounded-circle d-flex align-items-center justify-content-center fw-800 text-white flex-shrink-0"
+               style="width:44px;height:44px;background:linear-gradient(135deg,#2563eb,#7c3aed);">
+            {{ app.applicant.first_name.0|upper }}{{ app.applicant.last_name.0|upper }}
+          </div>
+          <div class="flex-grow-1">
+            <div class="fw-700">{{ app.applicant.get_full_name|default:app.applicant.username }}</div>
+            <div class="text-muted small">{{ app.applicant.email }}</div>
+          </div>
+          <span class="cs-badge {% if app.status == 'applied' %}cs-badge-primary{% elif app.status == 'interview' %}cs-badge-info{% elif app.status == 'offered' %}cs-badge-success{% else %}cs-badge-warning{% endif %}">
+            {{ app.get_status_display }}
+          </span>
+        </div>
+        {% if app.resume %}
+        <div class="p-2 rounded mb-2" style="background:var(--cs-gray-100);">
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="small fw-600"><i class="bi bi-file-person me-1 text-primary"></i>{{ app.resume.title }}</span>
+            <span class="fw-800 small {% if app.resume.get_score >= 70 %}text-success{% elif app.resume.get_score >= 50 %}text-primary{% else %}text-warning{% endif %}">
+              Score: {{ app.resume.get_score }}/100
+            </span>
+          </div>
+          <div class="cs-progress mt-2" style="height:6px;">
+            <div class="cs-progress-bar" data-width="{{ app.resume.get_score }}" style="width:0;"></div>
+          </div>
+          {% if app.resume.skills.all %}
+          <div class="d-flex flex-wrap gap-1 mt-2">
+            {% for skill in app.resume.skills.all|slice:":5" %}
+            <span class="skill-tag" style="font-size:0.7rem;padding:0.15rem 0.5rem;">{{ skill.name }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+        {% if app.cover_letter %}
+        <div class="text-muted small mt-2 fst-italic">"{{ app.cover_letter|truncatechars:120 }}"</div>
+        {% endif %}
+        <div class="text-muted mt-2" style="font-size:0.75rem;">Applied {{ app.applied_at|timesince }} ago</div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="cs-card">
+  <div class="cs-card-body text-center py-5">
+    <i class="bi bi-people fs-1 text-muted d-block mb-3 opacity-25"></i>
+    <h6 class="fw-700">No Applicants Yet</h6>
+    <p class="text-muted small">Share your job posting to attract candidates.</p>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

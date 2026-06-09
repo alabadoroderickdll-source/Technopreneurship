@@ -1,0 +1,208 @@
+{% extends 'core/base_dashboard.html' %}
+
+{% block title %}Dashboard — CareerSync{% endblock %}
+
+{% block content %}
+<!-- Welcome -->
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+  <div>
+    <h4 class="fw-800 mb-1">👋 Welcome back, {{ user.first_name|default:user.username }}!</h4>
+    <p class="text-muted mb-0">Here's your career overview today.</p>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{% url 'resume_create' %}" class="btn-cs-primary btn btn-sm">
+      <i class="bi bi-plus-circle me-1"></i>New Resume
+    </a>
+    <a href="{% url 'interview_start' %}" class="btn-cs-accent btn btn-sm">
+      <i class="bi bi-mic me-1"></i>Practice Interview
+    </a>
+  </div>
+</div>
+
+<!-- Stat Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-blue"><i class="bi bi-file-person-fill"></i></div>
+      <div>
+        <div class="stat-value">{{ resumes_count }}</div>
+        <div class="stat-label">Resumes Created</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-green"><i class="bi bi-briefcase-fill"></i></div>
+      <div>
+        <div class="stat-value">{{ applications_count }}</div>
+        <div class="stat-label">Jobs Applied</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-purple"><i class="bi bi-mic-fill"></i></div>
+      <div>
+        <div class="stat-value">{{ sessions_count }}</div>
+        <div class="stat-label">Interview Sessions</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-orange"><i class="bi bi-graph-up-arrow"></i></div>
+      <div>
+        <div class="stat-value">
+          {% if resumes.0 %}{{ resumes.0.get_score }}%{% else %}—{% endif %}
+        </div>
+        <div class="stat-label">Resume Score</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Job Matches -->
+  <div class="col-lg-7">
+    <div class="cs-card">
+      <div class="cs-card-header d-flex align-items-center justify-content-between">
+        <h6 class="fw-700 mb-0"><i class="bi bi-briefcase-fill text-primary me-2"></i>Top Job Matches</h6>
+        <a href="{% url 'job_list' %}" class="small text-primary fw-600">View All →</a>
+      </div>
+      <div class="cs-card-body p-0">
+        {% if matched_jobs %}
+          {% for job, pct in matched_jobs %}
+          <a href="{% url 'job_detail' job.pk %}" class="d-flex align-items-center gap-3 p-3 border-bottom text-decoration-none hover-bg">
+            <div class="rounded-2 d-flex align-items-center justify-content-center fw-800 text-white flex-shrink-0"
+                 style="width:44px;height:44px;background:linear-gradient(135deg,#2563eb,#7c3aed);font-size:1.1rem;">
+              {{ job.company.0|upper }}
+            </div>
+            <div class="flex-grow-1 min-w-0">
+              <div class="fw-600 small text-truncate" style="color:var(--cs-text);">{{ job.title }}</div>
+              <div class="text-muted" style="font-size:0.8rem;">{{ job.company }} · {{ job.location }}</div>
+            </div>
+            <div class="flex-shrink-0 text-end">
+              <span class="match-badge {% if pct >= 70 %}match-high{% elif pct >= 40 %}match-mid{% else %}match-low{% endif %}">
+                {{ pct }}% Match
+              </span>
+              <div class="text-muted mt-1" style="font-size:0.75rem;">{{ job.get_job_type_display }}</div>
+            </div>
+          </a>
+          {% endfor %}
+        {% else %}
+          <div class="text-center py-5 text-muted">
+            <i class="bi bi-briefcase fs-1 d-block mb-2 opacity-25"></i>
+            <p class="mb-2">No job matches yet.</p>
+            <a href="{% url 'resume_create' %}" class="btn-cs-primary btn btn-sm">Create a Resume First</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions + Interview Sessions -->
+  <div class="col-lg-5">
+    <div class="cs-card mb-4">
+      <div class="cs-card-header">
+        <h6 class="fw-700 mb-0"><i class="bi bi-lightning-fill text-warning me-2"></i>Quick Actions</h6>
+      </div>
+      <div class="cs-card-body d-flex flex-column gap-2">
+        <a href="{% url 'resume_create' %}" class="btn-cs-primary btn d-flex align-items-center gap-2">
+          <i class="bi bi-plus-circle-fill"></i> Create New Resume
+        </a>
+        <a href="{% url 'job_list' %}" class="btn-cs-outline btn d-flex align-items-center gap-2">
+          <i class="bi bi-search"></i> Browse All Jobs
+        </a>
+        <a href="{% url 'interview_start' %}" class="btn btn-success d-flex align-items-center gap-2 fw-600" style="border-radius:8px;">
+          <i class="bi bi-mic-fill"></i> Start Mock Interview
+        </a>
+        <a href="{% url 'recruiter_post_job' %}" class="btn btn-outline-secondary d-flex align-items-center gap-2 fw-600" style="border-radius:8px;">
+          <i class="bi bi-plus-square"></i> Post a Job
+        </a>
+      </div>
+    </div>
+
+    <!-- Recent Interview Sessions -->
+    <div class="cs-card">
+      <div class="cs-card-header d-flex align-items-center justify-content-between">
+        <h6 class="fw-700 mb-0"><i class="bi bi-mic-fill text-success me-2"></i>Interview Sessions</h6>
+        <a href="{% url 'interview_home' %}" class="small text-primary fw-600">View All →</a>
+      </div>
+      <div class="cs-card-body p-0">
+        {% if recent_sessions %}
+          {% for session in recent_sessions %}
+          <div class="d-flex align-items-center justify-content-between p-3 border-bottom">
+            <div>
+              <div class="fw-600 small">{{ session.title }}</div>
+              <div class="text-muted" style="font-size:0.75rem;">{{ session.created_at|date:"M d, Y" }}</div>
+            </div>
+            <div class="text-end">
+              <div class="fw-800 {% if session.score >= 70 %}text-success{% elif session.score >= 50 %}text-primary{% else %}text-warning{% endif %}">
+                {{ session.score }}
+              </div>
+              <div style="font-size:0.7rem;color:var(--cs-gray-400);">Score</div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="text-center py-4 text-muted">
+            <i class="bi bi-mic fs-2 d-block mb-2 opacity-25"></i>
+            <p class="small mb-2">No sessions yet.</p>
+            <a href="{% url 'interview_start' %}" class="btn btn-sm btn-success fw-600">Start Practice</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Resume List -->
+{% if resumes %}
+<div class="cs-card mt-4">
+  <div class="cs-card-header d-flex align-items-center justify-content-between">
+    <h6 class="fw-700 mb-0"><i class="bi bi-file-person-fill text-primary me-2"></i>My Resumes</h6>
+    <a href="{% url 'resume_list' %}" class="small text-primary fw-600">View All →</a>
+  </div>
+  <div class="cs-card-body p-0">
+    <table class="cs-table">
+      <thead>
+        <tr>
+          <th>Resume Title</th>
+          <th>Score</th>
+          <th>Updated</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for resume in resumes %}
+        <tr>
+          <td>
+            <div class="fw-600">{{ resume.title }}</div>
+            <div class="text-muted small">{{ resume.full_name }}</div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div class="cs-progress" style="width:80px;">
+                <div class="cs-progress-bar" data-width="{{ resume.get_score }}" style="width:0"></div>
+              </div>
+              <span class="small fw-700">{{ resume.get_score }}%</span>
+            </div>
+          </td>
+          <td class="text-muted small">{{ resume.updated_at|date:"M d" }}</td>
+          <td>
+            <a href="{% url 'resume_edit' resume.pk %}" class="btn btn-sm btn-outline-primary me-1" style="border-radius:6px;">Edit</a>
+            <a href="{% url 'resume_preview' resume.pk %}" class="btn btn-sm btn-outline-secondary" style="border-radius:6px;">Preview</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
